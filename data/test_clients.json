@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "full_name": "Alice Cooper",
+    "email": "alice@music.com"
+  },
+  {
+    "id": 2,
+    "full_name": "Bob Dylan",
+    "email": "bob@folk.com"
+  },
+  {
+    "id": 3,
+    "full_name": "Charlie Parker",
+    "email": "charlie@jazz.com"
+  }
+]
