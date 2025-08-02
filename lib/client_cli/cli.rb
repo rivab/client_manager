@@ -39,6 +39,12 @@ module ClientCli
         args.delete_at(file_index)     # Remove the -f/--file flag
       end
 
+      # Parse command
+      if args.empty?
+        puts 'Error: Command is required'
+        exit 1
+      end
+
       command = args.shift
       case command
       when 'search'
