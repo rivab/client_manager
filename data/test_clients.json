@@ -11,6 +11,16 @@
   },
   {
     "id": 3,
+    "full_name": "Bob Dylan",
+    "email": "bob@music.com"
+  },
+  {
+    "id": 4,
+    "full_name": "Another Bob Dylan",
+    "email": "bob@music.com"
+  },
+  {
+    "id": 5,
     "full_name": "Charlie Parker",
     "email": "charlie@jazz.com"
   }

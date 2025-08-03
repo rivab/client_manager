@@ -3,36 +3,25 @@ require 'json'
 require 'tempfile'
 
 RSpec.describe ClientCli do
-  let(:sample_data) do
-    [
-      { 'id' => 1, 'full_name' => 'John Doe', 'email' => 'john.doe@example.com' },
-      { 'id' => 2, 'full_name' => 'Jane Smith', 'email' => 'jane.smith@example.com' },
-      { 'id' => 3, 'full_name' => 'John Johnson', 'email' => 'john.doe@example.com' }
-    ]
-  end
-
-  let(:temp_file) do
-    file = Tempfile.new(['clients', '.json'])
-    file.write(JSON.pretty_generate(sample_data))
-    file.close
-    file.path
-  end
-
-  after { File.unlink(temp_file) if File.exist?(temp_file) }
-
   describe ClientCli::ClientManager do
-    let(:manager) { described_class.new(temp_file) }
+    let(:manager) { described_class.new('data/test_clients.json') }
 
     it 'searches by name' do
-      results = manager.search_by_name('john')
-      expect(results.size).to eq(2)
-      expect(results.all? { |r| r['full_name'].downcase.include?('john') }).to be true
+      results = manager.search_by_name('Bob')
+      expect(results.size).to eq(3)
+      puts results
+      expect(results.all? { |r| r['full_name'].downcase.include?('bob') }).to be true
+    end
+
+    it 'searches for the name not in the file' do
+      results = manager.search_by_name('abc')
+      expect(results.size).to eq(0)
     end
 
     it 'finds duplicate emails' do
       duplicates = manager.find_duplicate_emails
       expect(duplicates.size).to eq(1)
-      expect(duplicates.first[:email]).to eq('john.doe@example.com')
+      expect(duplicates.first[:email]).to eq('bob@music.com')
       expect(duplicates.first[:count]).to eq(2)
     end
 
