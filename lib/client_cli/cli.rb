@@ -9,15 +9,19 @@ module ClientCli
     end
 
     def run
-      parse_arguments
-      case @options[:command]
-      when :search
-        handle_search
-      when :duplicates
-        handle_duplicates
+      if @args.empty?
+        show_interactive_menu
       else
-        puts "Unknown command: #{@options[:command]}"
-        exit 1
+        parse_arguments
+        case @options[:command]
+        when :search
+          handle_search
+        when :duplicates
+          handle_duplicates
+        else
+          puts "Unknown command: #{@options[:command]}"
+          exit 1
+        end
       end
     end
 
@@ -86,16 +90,74 @@ module ClientCli
       if duplicates.empty?
         puts "No duplicate #{@options[:field]} values found in the dataset"
       else
-        puts "Found #{duplicates.size} #{@options[:field]} value(s) with duplicates:"
-        puts ''
         duplicates.each do |duplicate|
-          puts "#{@options[:field].capitalize}: #{duplicate[:value]} (#{duplicate[:count]} records)"
           duplicate[:clients].each do |record|
-            puts "  - #{format_record(record)}"
+            puts "#{format_record(record)}"
           end
           puts ''
         end
+        puts "Found #{duplicates.size} #{@options[:field]} value(s) with duplicates:"
       end
+    end
+
+    def show_interactive_menu
+      puts 'ClientCli - Client Data Management Tool'
+      puts '========================================='
+      puts ''
+      puts 'What would you like to do?'
+      puts '1. Search records'
+      puts '2. Find duplicates'
+      puts '3. Exit'
+      puts ''
+      print 'Enter your choice (1-3): '
+
+      choice = gets.chomp
+
+      case choice
+      when '1'
+        interactive_search
+      when '2'
+        interactive_duplicates
+      when '3'
+        puts 'Goodbye!'
+        exit 0
+      else
+        puts 'Invalid choice. Please enter 1, 2, or 3.'
+        show_interactive_menu
+      end
+    end
+
+    def interactive_search
+      puts ''
+      print "Enter field to search (or press Enter for 'full_name'): "
+      field = gets.chomp
+      field = 'full_name' if field.empty?
+
+      print 'Enter search query: '
+      query = gets.chomp
+
+      if query.empty?
+        puts 'Search query cannot be empty.'
+        return
+      end
+
+      @options[:command] = :search
+      @options[:field] = field
+      @options[:query] = query
+
+      handle_search
+    end
+
+    def interactive_duplicates
+      puts ''
+      print "Enter field to check for duplicates (or press Enter for 'email'): "
+      field = gets.chomp
+      field = 'email' if field.empty?
+
+      @options[:command] = :duplicates
+      @options[:field] = field
+
+      handle_duplicates
     end
 
     def format_record(record)
