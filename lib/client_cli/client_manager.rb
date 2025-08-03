@@ -14,6 +14,8 @@ module ClientCli
     def search_by_field(field, query)
       return [] if query.nil? || query.strip.empty?
 
+      validate_field_exists(field)
+
       normalized_query = query.strip.downcase
       @data.select do |record|
         field_value = record[field]
@@ -26,6 +28,8 @@ module ClientCli
     end
 
     def find_duplicates_by_field(field)
+      validate_field_exists(field)
+
       field_groups = @data.group_by { |record| record[field] }
       duplicates = field_groups.select { |_value, records| records.size > 1 }
 
@@ -65,6 +69,18 @@ module ClientCli
       data.each_with_index do |item, index|
         raise ClientCli::Error, "Expected object at index #{index}, got #{item.class}" unless item.is_a?(Hash)
       end
+    end
+
+    def validate_field_exists(field)
+      return if @data.empty?
+
+      # Check if any record has this field
+      has_field = @data.any? { |record| record.key?(field) }
+
+      return if has_field
+
+      available_fields = @data.first.keys.join(', ')
+      raise ClientCli::Error, "Field '#{field}' not found. Available fields: #{available_fields}"
     end
   end
 end
