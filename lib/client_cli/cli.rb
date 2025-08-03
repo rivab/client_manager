@@ -23,6 +23,12 @@ module ClientCli
           exit 1
         end
       end
+    rescue ClientCli::Error => e
+      puts "Error: #{e.message}"
+      exit 1
+    rescue StandardError => e
+      puts "Unexpected error: #{e.message}"
+      exit 1
     end
 
     private
