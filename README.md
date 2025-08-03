@@ -128,7 +128,7 @@ rspec spec/client_cli_spec.rb
 
 ### Key Assumptions
 - Assumed to have json array
-- Only partial matching on full_name
+- Partial matching on full_name
 
 ### Known Limitations
 - Only search by single field, cannot search by both field on the same request
