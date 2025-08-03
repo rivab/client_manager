@@ -110,6 +110,10 @@ module ClientCli
       puts 'ClientCli - Client Data Management Tool'
       puts '========================================='
       puts ''
+
+      # Ask about data file first
+      choose_data_file
+
       puts 'What would you like to do?'
       puts '1. Search records'
       puts '2. Find duplicates'
@@ -164,6 +168,36 @@ module ClientCli
       @options[:field] = field
 
       handle_duplicates
+    end
+
+    def choose_data_file
+      puts 'Data file options:'
+      puts "1. Use default file (#{DEFAULT_DATA_FILE})"
+      puts '2. Specify custom file'
+      puts ''
+      print 'Enter your choice (1-2): '
+
+      choice = gets.chomp
+
+      case choice
+      when '1'
+        puts "Using default file: #{DEFAULT_DATA_FILE}"
+        puts ''
+      when '2'
+        print 'Enter path to your JSON file: '
+        custom_file = gets.chomp
+
+        if custom_file.empty?
+          puts "No file specified, using default: #{DEFAULT_DATA_FILE}"
+        else
+          @data_file = custom_file
+          puts "Using custom file: #{custom_file}"
+        end
+        puts ''
+      else
+        puts "Invalid choice. Using default file: #{DEFAULT_DATA_FILE}"
+        puts ''
+      end
     end
 
     def format_record(record)
