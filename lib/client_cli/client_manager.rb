@@ -3,7 +3,7 @@ require 'json'
 module ClientCli
   class ClientManager
     def initialize(data_file_path)
-      @data_file_path = data_file_path
+      @data_file_path = File.expand_path(data_file_path)
       @data = load_data
     end
 
