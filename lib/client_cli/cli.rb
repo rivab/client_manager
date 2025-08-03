@@ -10,7 +10,6 @@ module ClientCli
 
     def run
       parse_arguments
-
       case @options[:command]
       when :search
         handle_search
@@ -49,9 +48,11 @@ module ClientCli
       case command
       when 'search'
         @options[:command] = :search
+        @options[:field] = args.shift || 'full_name' # Default to full_name
         @options[:query] = args.shift
       when 'duplicates'
         @options[:command] = :duplicates
+        @options[:field] = args.shift || 'email' # Default to email
       else
         @options[:command] = command.to_sym
       end
@@ -60,41 +61,45 @@ module ClientCli
     def handle_search
       unless @options[:query]
         puts 'Error: Search query is required'
-        puts "Usage: #{$0} search QUERY"
+        puts "Usage: #{$0} search [FIELD] QUERY"
         exit 1
       end
 
       manager = ClientManager.new(@data_file)
-      results = manager.search_by_name(@options[:query])
+      results = manager.search_by_field(@options[:field], @options[:query])
 
       if results.empty?
-        puts "No clients found matching '#{@options[:query]}'"
+        puts "No records found with #{@options[:field]} matching '#{@options[:query]}'"
       else
-        puts "Found #{results.size} client(s) matching '#{@options[:query]}':"
+        puts "Found #{results.size} record(s) with #{@options[:field]} matching '#{@options[:query]}':"
         puts ''
-        results.each do |client|
-          puts client
+        results.each do |record|
+          puts format_record(record)
         end
       end
     end
 
     def handle_duplicates
       manager = ClientManager.new(@data_file)
-      duplicates = manager.find_duplicate_emails
+      duplicates = manager.find_duplicates_by_field(@options[:field])
 
       if duplicates.empty?
-        puts 'No duplicate emails found in the dataset'
+        puts "No duplicate #{@options[:field]} values found in the dataset"
       else
-        puts "Found #{duplicates.size} email(s) with duplicates:"
+        puts "Found #{duplicates.size} #{@options[:field]} value(s) with duplicates:"
         puts ''
         duplicates.each do |duplicate|
-          puts "Email: #{duplicate[:email]} (#{duplicate[:count]} clients)"
-          duplicate[:clients].each do |client|
-            puts "  - #{client}"
+          puts "#{@options[:field].capitalize}: #{duplicate[:value]} (#{duplicate[:count]} records)"
+          duplicate[:clients].each do |record|
+            puts "  - #{format_record(record)}"
           end
           puts ''
         end
       end
+    end
+
+    def format_record(record)
+      record.map { |key, value| "#{key.capitalize}: #{value}" }.join(', ')
     end
   end
 end

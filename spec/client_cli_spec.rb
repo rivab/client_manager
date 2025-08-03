@@ -20,27 +20,13 @@ RSpec.describe ClientCli do
 
   after { File.unlink(temp_file) if File.exist?(temp_file) }
 
-  describe ClientCli::Client do
-    let(:client) { described_class.new({ 'id' => 1, 'full_name' => 'John', 'email' => 'john@test.com' }) }
-
-    it 'initializes with correct attributes' do
-      expect(client.id).to eq(1)
-      expect(client.full_name).to eq('John')
-      expect(client.email).to eq('john@test.com')
-    end
-
-    it 'formats to_s correctly' do
-      expect(client.to_s).to eq('ID: 1, Name: John, Email: john@test.com')
-    end
-  end
-
   describe ClientCli::ClientManager do
     let(:manager) { described_class.new(temp_file) }
 
     it 'searches by name' do
       results = manager.search_by_name('john')
       expect(results.size).to eq(2)
-      expect(results.all? { |c| c.full_name.downcase.include?('john') }).to be true
+      expect(results.all? { |r| r['full_name'].downcase.include?('john') }).to be true
     end
 
     it 'finds duplicate emails' do
