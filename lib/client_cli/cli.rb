@@ -117,9 +117,10 @@ module ClientCli
       puts 'What would you like to do?'
       puts '1. Search records'
       puts '2. Find duplicates'
-      puts '3. Exit'
+      puts '3. Ratings filter'
+      puts '4. Exit'
       puts ''
-      print 'Enter your choice (1-3): '
+      print 'Enter your choice (1-4): '
 
       choice = gets.chomp
 
@@ -129,6 +130,8 @@ module ClientCli
       when '2'
         interactive_duplicates
       when '3'
+        ratings_filteration
+      when '4'
         puts 'Goodbye!'
         exit 0
       else
@@ -156,6 +159,25 @@ module ClientCli
       @options[:query] = query
 
       handle_search
+    end
+
+    def ratings_filteration
+      puts ''
+      print "Enter rate "
+      query = gets.chomp
+
+      # field = gets.chomp
+      # field = 'rating' if field.empty?
+
+      if query.empty?
+        puts 'Search query cannot be empty.'
+        return
+      end
+      rating_value = query.to_f
+
+      manager = ClientManager.new(@data_file)
+      results = manager.rating_filteration(rating_value)
+      puts results
     end
 
     def interactive_duplicates

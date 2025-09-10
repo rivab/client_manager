@@ -47,6 +47,11 @@ module ClientCli
       @data.size
     end
 
+    def rating_filteration(rating_value)
+      
+      @data.select {|client| client["result"]["rating"] >= rating_value }
+    end
+
     private
 
     def load_data
